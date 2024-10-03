@@ -1,5 +1,5 @@
 class Train
-  attr_reader :number, :speed, :current_route, :current_station, :wagons
+  attr_reader :number, :speed, :current_route, :current_station, :wagons, :type
 
   CRUISING_SPEED = 80
 
@@ -9,6 +9,7 @@ class Train
     @speed = 0
     @current_route = nil
     @current_station = nil
+    @type = nil
   end
 
   def accelerate
@@ -43,15 +44,24 @@ class Train
     puts "Next: #{next_station}" if next_station
   end
 
-  protected
-
-  # Вызываются только в классах потомках
   def attach_wagon(wagon)
-    @wagons.append(wagon) unless speed > 0 || wagons.include?(wagon)
+    if type && speed == 0 && wagon.type == type && wagons.none?(wagon)
+      @wagons.append(wagon)
+      wagon.attach(self)
+      puts "Attach successfully!"
+    else
+      puts "Failed, something went wrong..."
+    end
   end
 
   def unhook_wagon(wagon)
-    @wagons.delete(wagon) if speed == 0 && wagons.include?(wagon)
+    if speed == 0 && wagons.include?(wagon)
+      @wagons.delete(wagon)
+      wagon.unhook(self)
+      puts "Unhook successfully!"
+    else
+      puts "Failed, something went wrong..."
+    end
   end
 
   private
