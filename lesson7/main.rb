@@ -9,19 +9,43 @@ HEREDOC
 
 def select_item_by_name(items, item_name)
   puts "Current #{item_name}s: [#{items.keys * ', '}]"
-  print "Select #{item_name}: "
-  items[gets.chomp]
+  print "Select #{item_name} or exit: "
+  input_name = gets.chomp
+  
+  if input_name.upcase == "EXIT"
+    return
+  elsif items.empty?
+    puts "Need to create some #{item_name}"
+    return
+  end
+
+  items[input_name]
+end
+
+def create_station(railroad)
+  print "Enter Station name or exit: "
+  name = gets.chomp
+  return if name.upcase == "EXIT"
+  puts "Created: #{railroad.create_station(name).inspect}"
+rescue StandardError => e
+  puts "Exception: #{e.message}, try again..."
+  retry
 end
 
 def build_route(railroad)
-  print "\nEnter route name: "
+  print "Enter route name or exit: "
   route_name = gets.chomp
+  return if route_name.upcase == "EXIT"
 
   puts "\nSelect start station:"
   start_station = select_item_by_name(railroad.stations, "station")
+  return if start_station.nil?
   puts "\nSelect final station:"
   final_station = select_item_by_name(railroad.stations, "station")
-  route = railroad.create_route(route_name, start_station, final_station)
+  return iffinal_station.nil?
+
+  puts "Created: \
+    #{railroad.create_route(route_name, start_station, final_station).inspect}"
 
   loop do
     puts "\n1 - Add way point"
@@ -43,14 +67,18 @@ def build_route(railroad)
     else next
     end
   end
+rescue StandardError => e
+  puts "Exception: #{e.message}, try again..."
+  retry
 end
 
 def create_train(railroad)
-  print "\nEnter train type [cargo/passenger]: "
-  type = gets.chomp.to_sym
-
-  print 'Enter train number: '
+  print 'Enter train number or exit: '
   train_number = gets.chomp
+  return if train_number.upcase == "EXIT"
+
+  print "Enter train type [cargo/passenger] or exit: "
+  type = gets.chomp.to_sym
   
   if type == :passenger
     puts "Created: #{railroad.create_passenger_train(train_number).inspect}"
@@ -59,9 +87,8 @@ def create_train(railroad)
   else
     raise TypeError, "Wrong Train type"
   end
-  
-  rescue StandardError => e
-    puts "Exception: #{e.message}, try again..."
+rescue StandardError => e
+  puts "Exception: #{e.message}, try again..."
   retry
 end
 
@@ -93,12 +120,16 @@ end
 
 def set_train_route(railroad)
   train = select_item_by_name(railroad.trains, "Train")
+  return if train.nil?
   route = select_item_by_name(railroad.routes, "Route")
+  return if route.nil?
   train.set_route(route)
 end
 
 def move_train(railroad)
   train = select_item_by_name(railroad.trains, "train")
+  return if train.nil?
+  
   print 'Move (N)ext or (P)revious way point? [N/P]: '
   case gets.chomp.upcase
   when "N" then train.move_forward
@@ -113,10 +144,15 @@ def attach_wagon(railroad)
   create_wagons(railroad) if gets.chomp.upcase == 'Y'
 
   loop do
-    puts "\nTrain=|  <-|=Wagon"
     train = select_item_by_name(railroad.trains, "train")
     wagon = select_item_by_name(railroad.wagons, "wagon")
+
+    if train.nil? || wagon.nil?
+      puts "Need train and wagon to attach"
+      break
+    end
     train.attach_wagon(wagon)
+    puts "#{railroad.wagons.key(wagon)} successfully attach to #{train.number}"
     print 'Continue [y/n]: '
     break unless gets.chomp.upcase == 'Y'
   end
@@ -124,14 +160,20 @@ end
 
 def unhook_wagon(railroad)
   loop do
-    puts "\nTrain =| X |= Wagon"
     train = select_item_by_name(railroad.trains, "train")
     wagon = select_item_by_name(railroad.wagons, "wagon")
+    
+    if train.nil? || wagon.nil?
+      puts "Need train and wagon to unhook"
+      break
+    end
     train.unhook_wagon(wagon)
+    puts "#{railroad.wagons.key(wagon)} successfully unhook from #{train.number}"
     print 'Continue [y/n]: '
     break unless gets.chomp.upcase == 'Y'
   end
 end
+
 
 railroad = Railroad.new
 
@@ -143,9 +185,7 @@ loop do
   print "Select action: "
   
   case gets.to_i
-  when 1
-    print "\nEnter Station name: "
-    railroad.create_station(gets.chomp)
+  when 1 then create_station(railroad)
   when 2 then create_train(railroad)
   when 3 then build_route(railroad)
   when 4 then set_train_route(railroad)

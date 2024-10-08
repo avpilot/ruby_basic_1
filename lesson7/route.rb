@@ -40,8 +40,10 @@ class Route
   protected
 
   def validate!
-    if start_station.nil? || final_station.nil?
-      raise ArgumentError, "Empty argument value"
+    if start_station.nil?
+      raise ArgumentError, "Empty start station"
+    elsif  final_station.nil?
+      raise ArgumentError, "Empty final station"
     elsif start_station.class != Station || final_station.class != Station
       raise TypeError, "Wrong station type"
     end

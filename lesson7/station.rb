@@ -33,6 +33,6 @@ class Station
   protected
 
   def validate!
-    raise ArgumentError, "Empty argument value" if name.empty?
+    raise ArgumentError, "Empty staton name" if name.empty?
   end
 end

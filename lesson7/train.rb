@@ -72,7 +72,7 @@ class Train
   protected
 
   def validate!
-    raise ArgumentError, "Empty argument value" if number.empty?
+    raise ArgumentError, "Empty train name" if number.empty?
     raise ArgumentError, "Wrong train number format" if number !~ NUMBER_FORMAT
   end
 
