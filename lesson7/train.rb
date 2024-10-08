@@ -51,17 +51,23 @@ class Train
     {previous: previous_station, current: current_station, next: next_station}
   end
 
-  def attach_wagon(wagon)
+  def attach_wagon?(wagon)
     if type && speed == 0 && wagon.type == type && wagons.none?(wagon)
       @wagons.append(wagon)
       wagon.attach(self)
+      true
+    else
+      false
     end
   end
 
-  def unhook_wagon(wagon)
+  def unhook_wagon?(wagon)
     if speed == 0 && wagons.include?(wagon)
       @wagons.delete(wagon)
       wagon.unhook(self)
+      true
+    else
+      false
     end
   end
 

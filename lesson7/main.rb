@@ -14,9 +14,11 @@ def select_item_by_name(items, item_name)
   
   if input_name.upcase == "EXIT"
     return
-  elsif items.empty?
+  elsif items.keys.empty?
     puts "Need to create some #{item_name}"
     return
+  elsif items[input_name].nil?
+    puts "#{item_name.capitalize} not found"
   end
 
   items[input_name]
@@ -35,17 +37,22 @@ end
 def build_route(railroad)
   print "Enter route name or exit: "
   route_name = gets.chomp
-  return if route_name.upcase == "EXIT"
+  if route_name.upcase == "EXIT"
+    return
+  elsif route_name.empty?
+    raise ArgumentError, "Empty route name"
+  end
+    
 
   puts "\nSelect start station:"
   start_station = select_item_by_name(railroad.stations, "station")
-  return if start_station.nil?
+  raise ArgumentError, "Empty start station" if start_station.nil?
   puts "\nSelect final station:"
   final_station = select_item_by_name(railroad.stations, "station")
-  return iffinal_station.nil?
+  raise ArgumentError, "Empty final station" if final_station.nil?
+  route = railroad.create_route(route_name, start_station, final_station)
 
-  puts "Created: \
-    #{railroad.create_route(route_name, start_station, final_station).inspect}"
+  puts "Created: #{route.inspect}"
 
   loop do
     puts "\n1 - Add way point"
@@ -148,11 +155,13 @@ def attach_wagon(railroad)
     wagon = select_item_by_name(railroad.wagons, "wagon")
 
     if train.nil? || wagon.nil?
-      puts "Need train and wagon to attach"
+      puts "Need train or wagon to attach"
       break
     end
-    train.attach_wagon(wagon)
-    puts "#{railroad.wagons.key(wagon)} successfully attach to #{train.number}"
+    if train.attach_wagon?(wagon)
+      puts "#{railroad.wagons.key(wagon)} successfully attach "\
+           "to #{train.number}"
+    end
     print 'Continue [y/n]: '
     break unless gets.chomp.upcase == 'Y'
   end
@@ -164,11 +173,14 @@ def unhook_wagon(railroad)
     wagon = select_item_by_name(railroad.wagons, "wagon")
     
     if train.nil? || wagon.nil?
-      puts "Need train and wagon to unhook"
+      puts "Need train or wagon to unhook"
       break
     end
-    train.unhook_wagon(wagon)
-    puts "#{railroad.wagons.key(wagon)} successfully unhook from #{train.number}"
+
+    if train.unhook_wagon?(wagon)
+      puts "#{railroad.wagons.key(wagon)} successfully unhook "\
+           "from #{train.number}"
+    end
     print 'Continue [y/n]: '
     break unless gets.chomp.upcase == 'Y'
   end
