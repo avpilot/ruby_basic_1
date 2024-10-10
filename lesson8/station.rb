@@ -30,6 +30,10 @@ class Station
     @@instances
   end
 
+  def each_train(&block)
+    current_trains.each { |train| block.call(train) }
+  end
+
   protected
 
   def validate!
