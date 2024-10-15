@@ -4,15 +4,23 @@ class CargoWagon < Wagon
   def initialize(volume)
     @train = nil
     @type = :cargo
-    @volume = volume
-    @free_volume = volume
+    @volume = volume.to_f
+    @free_volume = volume.to_f
+    validate!
   end
 
   def take_volume(volume)
-    raise "Not enough volume" if volume > free_volume
+    raise 'Not enough volume' if volume > free_volume
   end
 
   def busy_volume
     volume - free_volume
+  end
+
+  protected
+
+  def validate!
+    raise ArgumentError, 'Empty volume' if volume.empty?
+    raise ArgumentError, 'Wrong volume' if volume <= 0
   end
 end
