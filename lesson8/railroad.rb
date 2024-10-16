@@ -30,8 +30,8 @@ class Railroad
     trains[train_number] = CargoTrain.new(train_number)
   end
 
-  def create_cargo_wagon(wagon_name)
-    wagons[wagon_name] = CargoWagon.new
+  def create_cargo_wagon(wagon_name, volume)
+    wagons[wagon_name] = CargoWagon.new(volume)
   end
 
   def create_passenger_wagon(wagon_name)
@@ -60,11 +60,22 @@ class Railroad
     puts "\nCurrent station with trains:"
     stations.each do |station_name, station|
       puts "-#{station_name}: "
-      station.current_trains.each do |train|
-        print "    #{train.number} : "
-        train.wagons.each { |wagon| print "#{self.wagons.key(wagon)}-" }
-        puts
+      station.each_train do |train|
+        puts "  #{train.number}, #{train.type}, #{train.wagons.size} wagons"
+        train.each_wagon do |wagon|
+          number |= 1
+          print "    "
+          print "#{number}, #{wagon.type}, "
+          puts "free: #{wagon.free_space}, busy: #{wagon.busy_space}"
+          number += 1
+        end
       end
+
+      # station.current_trains.each do |train|
+      #   print "    #{train.number} : "
+      #   train.wagons.each { |wagon| print "#{self.wagons.key(wagon)}-" }
+      #   puts
+      # end
     end
   end
 end

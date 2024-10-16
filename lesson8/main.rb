@@ -110,9 +110,15 @@ def create_wagons(railroad)
       type = gets.chomp.to_sym
 
       if type == :cargo
-        puts "Created: #{railroad.create_cargo_wagon(wagon_name).inspect}"
+        print 'Enter wagon volume: '
+        volume = gets.chomp.to_f
+        wagon = railroad.create_cargo_wagon(wagon_name, volume)
+        puts "Created cargo wagon: #{wagon.inspect}"
       elsif type == :passenger
-        puts "Created: #{railroad.create_passenger_wagon(wagon_name).inspect}"
+        print 'Enter wagon seats count: '
+        seats_count = gets.chomp.to_i
+        wagon = railroad.create_passenger_wagon(wagon_name, seats_count)
+        puts "Created passenger wagon: #{wagon.inspect}"
       else 
         raise TypeError, "Wrong Wagon type"
       end
