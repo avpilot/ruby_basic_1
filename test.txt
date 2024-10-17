@@ -1,1 +1,1 @@
-test file
+st1 = railroad.create_station
