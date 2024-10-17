@@ -2,9 +2,10 @@ require_relative "railroad"
 
 
 LIST_COMMANDS = <<HEREDOC
-1 - Create station    4 - Set train route         7 - Move train by route
-2 - Create train      5 - Create/attach wagons    8 - Show current station list
-3 - Create route      6 - Unhook wagons           9 - Exit
+1 - Create station    5 - Create/attach wagons       9  - Take up wagon space
+2 - Create train      6 - Unhook wagons              10 - Train wagons 
+3 - Create route      7 - Move train by route        11 - Station trains
+4 - Set train route   8 - Show current stations      99 - Exit
 HEREDOC
 
 def select_item_by_name(items, item_name)
@@ -101,23 +102,23 @@ end
 
 def create_wagons(railroad)
   loop do
-    print "\nEnter new wagon name or exit: "
-    wagon_name = gets.chomp
-    break if wagon_name == "exit"
 
     begin
       print 'Enter wagon type [cargo/passenger]: '
       type = gets.chomp.to_sym
 
       if type == :cargo
+        # befor creating wagon
+        wagon_number = "cw#{CargoWagon.instances}"
         print 'Enter wagon volume: '
         volume = gets.chomp.to_f
-        wagon = railroad.create_cargo_wagon(wagon_name, volume)
+        wagon = railroad.create_cargo_wagon(wagon_number, volume)
         puts "Created cargo wagon: #{wagon.inspect}"
       elsif type == :passenger
+        wagon_number = "pw#{PassengerWagon.instances}"
         print 'Enter wagon seats count: '
         seats_count = gets.chomp.to_i
-        wagon = railroad.create_passenger_wagon(wagon_name, seats_count)
+        wagon = railroad.create_passenger_wagon(wagon_number, seats_count)
         puts "Created passenger wagon: #{wagon.inspect}"
       else 
         raise TypeError, "Wrong Wagon type"
@@ -126,8 +127,10 @@ def create_wagons(railroad)
       puts "Exception: #{e.message}, try again..."
       retry
     end
-    puts "Current wagons: "
     railroad.show_current_wagons
+    print "Enter to continue or exit: "
+    user_input = gets.chomp.upcase
+    break if user_input == "EXIT"
   end
 end
 
@@ -151,9 +154,8 @@ def move_train(railroad)
 end
 
 def attach_wagon(railroad)
-  puts "\nCurrent wagons: "
   railroad.show_current_wagons
-  print 'Need to create new wagons? [y/n]:'
+  print 'Need to create new wagons? [y/n]: '
   create_wagons(railroad) if gets.chomp.upcase == 'Y'
 
   loop do
@@ -192,6 +194,56 @@ def unhook_wagon(railroad)
   end
 end
 
+def take_space(railroad)
+  railroad.show_current_wagons
+  print "Enter to continue or exit: "
+  user_input = gets.chomp.upcase
+  return if user_input == "EXIT"
+  
+  loop do
+    puts 'Enter wagon number or exit: '
+    wagon = select_item_by_name(railroad.wagons, "wagon")
+    return if wagon.nil?
+    print 'Space to take up: '
+    if wagon.type == :cargo
+      space_count = gets.chomp.to_f
+    else
+      space_count = gets.chomp.to_i
+    end
+    wagon.take_space(space_count)
+    print 'Continue [y/n]: '
+    break unless gets.chomp.upcase == 'Y'
+  end
+rescue StandardError => e
+  puts "Exception: #{e.message}, try again..."
+  retry
+end
+
+def show_train_wagons(railroad)
+  puts 'Enter train number or exit: '
+  train = select_item_by_name(railroad.trains, "train")
+  return if train.nil?
+
+  train.each_wagon do |wagon|
+    puts "#{railroad.wagons.key(wagon)}, #{wagon.type}, "\
+         "free: #{wagon.free_space}, busy: #{wagon.busy_space}"
+  end
+end
+
+def show_station_trains(railroad)
+  puts 'Enter station name or exit: '
+  station = select_item_by_name(railroad.stations, "station")
+  return if station.nil?
+
+  station.each_train do |train|
+    puts "  #{train.number}, #{train.type}, #{train.wagons.size} wagons"
+    train.each_wagon do |wagon|
+      puts "    #{railroad.wagons.key(wagon)}, #{wagon.type}, "\
+           "free: #{wagon.free_space}, busy: #{wagon.busy_space}"
+    end
+  end
+end
+
 
 railroad = Railroad.new
 
@@ -211,7 +263,10 @@ loop do
   when 6 then unhook_wagon(railroad)
   when 7 then move_train(railroad)
   when 8 then railroad.show_current_stations
-  when 9 then break
+  when 9 then take_space(railroad)
+  when 10 then show_train_wagons(railroad)
+  when 11 then show_station_trains(railroad)
+  when 99 then break
   else next
   end
   puts

@@ -30,12 +30,12 @@ class Railroad
     trains[train_number] = CargoTrain.new(train_number)
   end
 
-  def create_cargo_wagon(wagon_name, volume)
-    wagons[wagon_name] = CargoWagon.new(volume)
+  def create_cargo_wagon(wagon_number, volume)
+    wagons[wagon_number] = CargoWagon.new(volume)
   end
 
-  def create_passenger_wagon(wagon_name)
-    wagons[wagon_name] = PassengerWagon.new
+  def create_passenger_wagon(wagon_number, seats_count)
+    wagons[wagon_number] = PassengerWagon.new(seats_count)
   end
 
   def create_passenger_train(train_number)
@@ -47,11 +47,16 @@ class Railroad
   end
 
   def show_current_wagons
+    puts "\nCurrent wagons: "
+    puts "No wagons yet..." if wagons.empty?
     wagons.each do |name, wagon|
+      print "  #{name}, #{wagon.type}, "\
+             "free: #{wagon.free_space}, busy: #{wagon.busy_space}"
+
       if wagon.train
-        puts "#{name} - Train: #{wagon.train.number}"
+        puts " - Train: #{wagon.train.number}"
       else
-        puts "#{name} - Free"
+        puts " - Free"
       end
     end
   end
@@ -63,19 +68,10 @@ class Railroad
       station.each_train do |train|
         puts "  #{train.number}, #{train.type}, #{train.wagons.size} wagons"
         train.each_wagon do |wagon|
-          number |= 1
-          print "    "
-          print "#{number}, #{wagon.type}, "
-          puts "free: #{wagon.free_space}, busy: #{wagon.busy_space}"
-          number += 1
+          puts "    #{wagons.key(wagon)}, #{wagon.type}, "\
+               "free: #{wagon.free_space}, busy: #{wagon.busy_space}"
         end
       end
-
-      # station.current_trains.each do |train|
-      #   print "    #{train.number} : "
-      #   train.wagons.each { |wagon| print "#{self.wagons.key(wagon)}-" }
-      #   puts
-      # end
     end
   end
 end
