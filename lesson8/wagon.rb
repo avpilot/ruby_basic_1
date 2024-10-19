@@ -12,7 +12,7 @@ class Wagon
   end
 
   def take_place
-    raise 'need emplementation of this method'
+    raise 'should be emplemented in subclasses'
   end
 
   def free_place
