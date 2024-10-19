@@ -47,29 +47,29 @@ class Railroad
   end
 
   def show_current_wagons
-    puts "\nCurrent wagons: "
+    puts "Current wagons: "
     puts "No wagons yet..." if wagons.empty?
     wagons.each do |name, wagon|
       print "  #{name}, #{wagon.type}, "\
-             "free: #{wagon.free_space}, busy: #{wagon.busy_space}"
+             "free: #{wagon.free_place}, busy: #{wagon.busy_place}"
 
       if wagon.train
         puts " - Train: #{wagon.train.number}"
       else
-        puts " - Free"
+        puts " - Not attached"
       end
     end
   end
 
   def show_current_stations
-    puts "\nCurrent station with trains:"
+    puts "Current station with trains:"
     stations.each do |station_name, station|
       puts "-#{station_name}: "
       station.each_train do |train|
         puts "  #{train.number}, #{train.type}, #{train.wagons.size} wagons"
         train.each_wagon do |wagon|
           puts "    #{wagons.key(wagon)}, #{wagon.type}, "\
-               "free: #{wagon.free_space}, busy: #{wagon.busy_space}"
+               "free: #{wagon.free_place}, busy: #{wagon.busy_place}"
         end
       end
     end
