@@ -32,6 +32,5 @@ class Wagon
   def validate!
     raise ArgumentError, 'Empty place count' if total_place.zero?
     raise ArgumentError, 'Negative place count' if total_place < 0
-    #raise TypeError, 'Wrong volume type' unless @volume.kind_of? Numeric
   end
 end

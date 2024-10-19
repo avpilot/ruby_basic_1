@@ -1,5 +1,4 @@
 class PassengerWagon < Wagon
-
   def initialize(seats_count)
     super(seats_count)
     @type = :passenger

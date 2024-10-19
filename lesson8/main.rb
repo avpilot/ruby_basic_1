@@ -1,10 +1,10 @@
 require_relative 'railroad'
 
 LIST_COMMANDS = <<~HEREDOC
-  1 - Create station    6 - Attach wagons          10 - Take up wagon space
-  2 - Create train      7 - Unhook wagons          11 - Train wagons
-  3 - Create wagon      8 - Move train by route    12 - Station trains
-  4 - Create route      9 - Show current stations  99 - Exit
+  1 - Create station    6 - Attach wagons          11 - Train wagons
+  2 - Create train      7 - Unhook wagons          12 - Station trains
+  3 - Create wagon      8 - Move train by route    99 - Exit
+  4 - Create route      9 - Show current stations
   5 - Set train route  10 - Take up wagon space
 HEREDOC
 
@@ -55,19 +55,21 @@ def build_route(railroad)
 
   route = railroad.create_route(route_name, start_station, final_station)
   puts "Created: #{route.inspect}"
-  manage_route(route)
+  manage_route(railroad, route)
+rescue StandardError => e
+  puts "Exception: #{e.message}, try again..."
+  retry
 end
 
-def manage_route(route)
+def manage_route(railroad, route)
   loop do
     puts "1 - Add way point"
     puts '2 - Delete way point'
     puts '3 - Show route points'
     puts '4 - Save route'
     print 'Select action: '
-    user_input = gets.to_i
 
-    case user_input
+    case gets.to_i
     when 1
       station = select_item_by_name(railroad.stations, 'add way point')
       route.add_station(station) if station
@@ -106,7 +108,7 @@ rescue StandardError => e
 end
 
 def new_wagon(railroad)
-  print 'Enter wagon type [cargo/passenger]: '
+  print 'Enter wagon type [cargo/passenger] or exit: '
   type = gets.chomp.to_sym
 
   if type == :cargo
@@ -119,6 +121,8 @@ def new_wagon(railroad)
     print 'Enter wagon seats count: '
     seats_count = gets.chomp.to_i
     wagon = railroad.create_passenger_wagon(wagon_number, seats_count)
+  elsif type == :exit
+    return
   else
     raise TypeError, 'Wrong Wagon type'
   end
@@ -126,13 +130,9 @@ def new_wagon(railroad)
 end
 
 def create_wagons(railroad)
-  #print 'Need to create new wagons? [y/n]: '
-  #return if gets.chomp.upcase == 'N'
-
   loop do
     railroad.show_current_wagons
     new_wagon(railroad)  
-    railroad.show_current_wagons
     print 'Enter to continue or exit: '
     user_input = gets.chomp.upcase
     break if user_input == 'EXIT'
@@ -199,10 +199,6 @@ end
 
 def take_place(railroad)
   railroad.show_current_wagons
-  #print 'Enter to continue or exit: '
-  #user_input = gets.chomp.upcase
-  #return if user_input == 'EXIT'
-
   loop do
     puts 'Enter wagon number or exit: '
     wagon = select_item_by_name(railroad.wagons, 'wagon')
@@ -259,13 +255,6 @@ def show_station_trains(railroad)
 end
 
 railroad = Railroad.new
-
-st1 = railroad.create_station('Novosib')
-st2 = railroad.create_station('Moscow')
-st3 = railroad.create_station('Saratov')
-
-ct1 = railroad.create_cargo_train('158-ct')
-ct1 = railroad.create_passenger_train('159-pt')
 
 puts '*' * 80
 puts 'Welcome to the Railroad management!'

@@ -1,5 +1,4 @@
 module Validator
-
   def valid?
     validate!
     true
