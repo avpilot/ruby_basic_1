@@ -7,8 +7,6 @@ class Train
 
   CRUISING_SPEED = 80
 
-  # @@trains = {}
-
   def initialize(number)
     @number = number.to_s
     @wagons = []
@@ -17,7 +15,6 @@ class Train
     @current_station = nil
     @type = nil
     validate!
-    # @@trains[number] = self
     register_instance
   end
 
@@ -70,10 +67,6 @@ class Train
       false
     end
   end
-
-  # def self.find(number)
-  #   @@trains[number]
-  # end
 
   def each_wagon(&block)
     wagons.each { |wagon| block.call(wagon) }

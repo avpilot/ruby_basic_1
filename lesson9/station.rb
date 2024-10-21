@@ -20,7 +20,6 @@ class Station
   end
 
   def current_train_names
-    # current_trains.map { |train| train.number }
     current_trains.map(&:number)
   end
 
