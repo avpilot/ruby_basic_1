@@ -37,12 +37,10 @@ def create_station(railroad)
   return if name.upcase == 'EXIT'
 
   puts "Created: #{railroad.create_station(name).inspect}"
-rescue StandardError => e
-  puts "Exception: #{e.message}, try again..."
-  retry
 end
 
 def build_route(railroad)
+  print 'Enter route name: '
   route_name = gets.chomp
   raise ArgumentError, 'Empty route name' if route_name.empty?
 
@@ -113,7 +111,7 @@ def new_wagon(railroad)
 
   case type
   when :cargo then wagon = new_cargo_wagon(railroad)
-  when :passenger then wagon = new_cargo_wagon(railroad)
+  when :passenger then wagon = new_passenger_wagon(railroad)
   else raise TypeError, 'Wrong Wagon type'
   end
   puts "Created #{type} wagon: #{wagon.inspect}"
@@ -127,9 +125,6 @@ def create_wagons(railroad)
     user_input = gets.chomp.upcase
     break if user_input == 'EXIT'
   end
-rescue StandardError => e
-  puts "Exception: #{e.message}, try again..."
-  retry
 end
 
 def train_route(railroad)
@@ -221,7 +216,6 @@ def show_station_trains(railroad)
 end
 
 railroad = Railroad.new
-
 puts '*' * 80
 puts 'Welcome to the Railroad management!'
 

@@ -1,7 +1,6 @@
 require_relative 'manufacturer'
 require_relative 'validator'
 require_relative 'instance_counter'
-require_relative 'accessors'
 require_relative 'train'
 require_relative 'station'
 require_relative 'route'
