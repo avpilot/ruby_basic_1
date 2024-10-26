@@ -4,6 +4,7 @@ class Wagon
   include Accessors
 
   attr_reader :type, :total_place
+
   attr_accessor_with_history :train
   strong_attr_accessor :busy_place, Integer
 
@@ -12,6 +13,7 @@ class Wagon
     @total_place = total_place
     @busy_place = 0
     validate!
+    total_place_validate!
     register_instance
   end
 
@@ -33,8 +35,7 @@ class Wagon
 
   protected
 
-  def validate!
-    raise ArgumentError, 'Empty place count' if total_place.zero?
-    raise ArgumentError, 'Negative place count' if total_place.negative?
+  def total_place_validate!
+    raise ArgumentError, 'Not positive place count' unless total_place.positive?
   end
 end

@@ -1,8 +1,10 @@
 class Station
-  include Validator
+  include Validation
   include InstanceCounter
 
   attr_reader :name, :current_trains
+
+  validate :name, :presence
 
   def initialize(name)
     @name = name.to_s
@@ -27,9 +29,7 @@ class Station
     current_trains.each { |train| block.call(train) }
   end
 
-  protected
-
-  def validate!
-    raise ArgumentError, 'Empty staton name' if name.empty?
-  end
+  # def validate!
+  #   raise ArgumentError, 'Empty staton name' if name.empty?
+  # end
 end

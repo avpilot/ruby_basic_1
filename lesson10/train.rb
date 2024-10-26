@@ -1,11 +1,15 @@
 class Train
-  include Validator
+  # include Validator
   include InstanceCounter
   include Manufacturer
+  include Validation
 
   attr_reader :number, :speed, :current_route, :current_station, :wagons, :type
 
   CRUISING_SPEED = 80
+
+  validate :number, :presence
+  validate :number, :format, /^([a-z]|\d){3}-?([a-z]|\d){2}$/i
 
   def initialize(number)
     @number = number.to_s
@@ -70,15 +74,6 @@ class Train
 
   def each_wagon(&block)
     wagons.each { |wagon| block.call(wagon) }
-  end
-
-  protected
-
-  def validate!
-    raise ArgumentError, 'Empty train name' if number.empty?
-
-    number_format = /^([a-z]|\d){3}-?([a-z]|\d){2}$/i
-    raise ArgumentError, 'Wrong train number format' if number !~ number_format
   end
 
   private

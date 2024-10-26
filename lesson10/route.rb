@@ -1,8 +1,13 @@
 class Route
-  include Validator
+  include Validation
   include InstanceCounter
 
   attr_reader :start_station, :final_station, :stations
+
+  validate :start_station, :presence
+  validate :final_station, :presence
+  validate :start_station, :type, Station
+  validate :final_station, :type, Station
 
   def initialize(start_station, final_station)
     @start_station = start_station
@@ -37,15 +42,13 @@ class Route
     stations[stations.index(station) - 1] unless station == start_station
   end
 
-  protected
-
-  def validate!
-    if start_station.nil?
-      raise ArgumentError, 'Empty start station'
-    elsif final_station.nil?
-      raise ArgumentError, 'Empty final station'
-    elsif start_station.class != Station || final_station.class != Station
-      raise TypeError, 'Wrong station type'
-    end
-  end
+  # def validate!
+  #   if start_station.nil?
+  #     raise ArgumentError, 'Empty start station'
+  #   elsif final_station.nil?
+  #     raise ArgumentError, 'Empty final station'
+  #   elsif start_station.class != Station || final_station.class != Station
+  #     raise TypeError, 'Wrong station type'
+  #   end
+  # end
 end
