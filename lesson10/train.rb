@@ -1,10 +1,15 @@
+require_relative 'station'
+
 class Train
-  # include Validator
   include InstanceCounter
   include Manufacturer
   include Validation
+  include Accessors
 
-  attr_reader :number, :speed, :current_route, :current_station, :wagons, :type
+  attr_reader :number, :speed, :wagons, :type
+
+  attr_accessor_with_history :current_route
+  strong_attr_accessor :current_station, Station
 
   CRUISING_SPEED = 80
 
@@ -28,12 +33,6 @@ class Train
 
   def stop
     @speed = 0
-  end
-
-  def waypoints(route)
-    @current_route = route
-    @current_station = route.start_station
-    route.start_station.arrival(self)
   end
 
   def move_forward

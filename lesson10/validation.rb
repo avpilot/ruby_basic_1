@@ -17,7 +17,7 @@ module Validation
     def new_presence_check(name)
       define_method("#{name}_presence_validation") do
         var_value = instance_variable_get("@#{name}".to_sym)
-        raise 'Presence validation error' if var_value.nil? || var_value.empty?
+        raise 'Presence validation error' if var_value.nil? || var_value == ''
       end
     end
 
@@ -30,10 +30,10 @@ module Validation
       end
     end
 
-    def new_type_check(name, var_type)
+    def new_type_check(name, type)
       define_method("#{name}_type_validation") do
         var_value = instance_variable_get("@#{name}".to_sym)
-        raise 'Type validation error' unless var_value.is_a? var_type
+        raise 'Type validation error' unless var_value.is_a? type
       end
     end
   end

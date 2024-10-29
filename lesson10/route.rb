@@ -29,9 +29,8 @@ class Route
   end
 
   def show_route_list
-    print "\nCurrent route:\n[ "
     stations[0..-2].each { |station| print "#{station.name}-" }
-    puts "#{stations[-1].name} ]"
+    puts stations[-1].name
   end
 
   def next_point(station)
@@ -41,14 +40,4 @@ class Route
   def previous_point(station)
     stations[stations.index(station) - 1] unless station == start_station
   end
-
-  # def validate!
-  #   if start_station.nil?
-  #     raise ArgumentError, 'Empty start station'
-  #   elsif final_station.nil?
-  #     raise ArgumentError, 'Empty final station'
-  #   elsif start_station.class != Station || final_station.class != Station
-  #     raise TypeError, 'Wrong station type'
-  #   end
-  # end
 end

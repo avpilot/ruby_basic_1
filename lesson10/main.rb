@@ -4,8 +4,8 @@ def list_commands
   <<~HEREDOC
     1 - Create station    6 - Attach wagons          11 - Train wagons
     2 - Create train      7 - Unhook wagons          12 - Station trains
-    3 - Create wagon      8 - Move train by route    99 - Exit
-    4 - Create route      9 - Show current stations
+    3 - Create wagon      8 - Move train by route    13 - Train routs history
+    4 - Create route      9 - Show current stations  99 - Exit
     5 - Set train route  10 - Take up wagon space
   HEREDOC
 end
@@ -134,7 +134,15 @@ def train_route(railroad)
   route = select_item_by_name(railroad.routes, 'Route')
   return if route.nil?
 
-  train.waypoints(route)
+  train.current_station&.current_trains&.delete(train)
+  waypoints(train, route)
+end
+
+def waypoints(train, route)
+  train.current_route = route
+  puts train.instance_variables
+  train.current_station = route.start_station
+  route.start_station.arrival(train)
 end
 
 def move_train(railroad)
@@ -215,6 +223,17 @@ def show_station_trains(railroad)
   end
 end
 
+def show_train_routes_history(railroad)
+  puts 'Enter train number or exit: '
+  train = select_item_by_name(railroad.trains, 'train')
+  return unless train
+
+  train.current_route_history ||= []
+  train.current_route_history.each do |route|
+    route&.show_route_list
+  end
+end
+
 railroad = Railroad.new
 puts '*' * 80
 puts 'Welcome to the Railroad management!'
@@ -236,6 +255,7 @@ loop do
   when 10 then take_place(railroad)
   when 11 then show_train_wagons(railroad)
   when 12 then show_station_trains(railroad)
+  when 13 then show_train_routes_history(railroad)
   when 99 then break
   else next
   end

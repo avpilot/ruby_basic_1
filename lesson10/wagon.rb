@@ -2,11 +2,12 @@ class Wagon
   include InstanceCounter
   include Manufacturer
   include Accessors
+  include Validation
 
-  attr_reader :type, :total_place
+  attr_reader :train, :type, :total_place, :busy_place
 
-  attr_accessor_with_history :train
-  strong_attr_accessor :busy_place, Integer
+  validate :total_place, :presence
+  validate :total_place, :type, Numeric
 
   def initialize(total_place)
     @train = nil
@@ -33,9 +34,8 @@ class Wagon
     @train = nil
   end
 
-  protected
-
   def total_place_validate!
-    raise ArgumentError, 'Not positive place count' unless total_place.positive?
+    raise ArgumentError, 'Empty place count' if total_place.zero?
+    raise ArgumentError, 'Negative place count' if total_place.negative?
   end
 end

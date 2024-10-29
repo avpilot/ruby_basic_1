@@ -28,8 +28,4 @@ class Station
   def each_train(&block)
     current_trains.each { |train| block.call(train) }
   end
-
-  # def validate!
-  #   raise ArgumentError, 'Empty staton name' if name.empty?
-  # end
 end
